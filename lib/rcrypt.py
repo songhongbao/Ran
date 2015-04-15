@@ -1,6 +1,5 @@
 #-*- coding:utf-8 -*-
 #!/usr/bin/python
-
 from Crypto.Cipher import AES
 import hashlib
 import random
@@ -26,7 +25,7 @@ RAN_CHANNEL_SESSION = 'SESSION'
 RAN_CHANNEL_INFO = 'INFO'
 RAN_CHANNEL_COUNT = 'COUNT'
 
-class RanCrypt():
+class Rcrypt():
     def __init__(self):
         #aes setting
         #aes key length must be 16(AES-128), 24(AES-192), 32(AES-256)
@@ -146,7 +145,7 @@ class RanCrypt():
 
     
 if __name__ == '__main__':
-    ran_crypt = RanCrypt()  # 初始化密钥
+    ran_crypt = Rcrypt()  # 初始化密钥
 #     e = ran_crypt.aes_encrypt('dsads4')
 #    d = ran_crypt.aes_decrypt(e)
 #    print "加密:",e
