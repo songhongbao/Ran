@@ -35,18 +35,20 @@ def deal(line, script = False):
         settings[key] = value
     return True
 
-def init():
+def main():
     with open(config_file) as fp:
         line_num = 1
         for line in fp:
             if not deal(line):
                 raise ValueError('ran.config line ' + str(line_num) + ' error:\n' + line)
-    config_thread = Rthread(init_script, 'config_refresh')
+        line_num += 1
+    init(False)
+    config_thread = Rthread(init, 'config_refresh')
     config_thread.start()
     #time wait the thread first done
     time.sleep(0.2)
 
-def init_script():
+def init(is_thread = True):
     refresh = int(get('script_refresh'))
     refresh_time = int(get('script_refresh_time'))
     while True:
@@ -55,13 +57,10 @@ def init_script():
             for line in fp:
                 if not deal(line, True):
                     raise ValueError('ran.config line ' + str(line_num) + ' error:\n' + line)
-            if refresh != 1:
+                line_num += 1
+            if refresh != 1 or is_thread == False:
                 return
             time.sleep(refresh_time)
 
 
-init()
-#config_thread = Rthread(refresh, 'config_refresh')
-while True:
-    print script('script_port')
-    time.sleep(1)
+main()
