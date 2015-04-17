@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import socket
 import time
-import os
-from log import rlog
+from server.rlog import rlog
 
 R_SERVER = 'server'
 R_CLIENT = 'client'
