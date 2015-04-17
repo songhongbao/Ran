@@ -6,10 +6,9 @@ import time
 
 cur_path = os.path.split(os.path.realpath(__file__))[0]
 
-sys.path.append(cur_path + '/server')
+sys.path.append(cur_path)
 
-from log import rlog
-from rsocket import tcpsocket
+from server.rsocket import tcpsocket
 
 while True:
     fsocket = tcpsocket.TcpSocket(7664)
