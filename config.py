@@ -4,27 +4,41 @@ from base.checkconfig import Conf
 from lib.rthread import Rthread
 
 config_file = 'config/ran.config'
-script_file = 'config/script.config'
+task_file = 'config/task.config'
+local_file = 'config/local.config'
 settings = dict()
-script_settings = dict()
+task_settings = dict()
+local_settings = dict()
 
 def config(key):
     return settings.get(key, '')
 
-def script(key):
-    return script_settings.get(key, '')
+def task(key):
+    return task_settings.get(key, '')
 
-def thread(self):
+def local(key):
+    return local_settings.get(key, '')
+
+def __thread(self):
     conf = Conf()
     while True:
-        with open(script_file) as fp:
-            script_config = fp.readlines()
-        settings = conf.check_script(script_config)
+        #task config
+        with open(task_file) as fp:
+            task_config = fp.readlines()
+        settings = conf.check_task(task_config)
         if not settings:
             print conf.get_error()
         else:
-            self.script_settings = settings
-        time.sleep(self.settings.get('script_refresh_time'))
+            self.task_settings = settings
+        #local config
+        with open(local_file) as fp:
+            local_config = fp.readlines()
+        settings = conf.check_local(local_config)
+        if not settings:
+            print conf.get_error()
+        else:
+            self.local_settings = settings
+        time.sleep(self.settings.get('config_refresh_time'))
 
 def init(self):
     conf = Conf()
@@ -35,14 +49,22 @@ def init(self):
     if not self.settings:
         print conf.get_error()
         exit(0)
-    #init script config
-    with open(script_file) as fp:
-        script_config = fp.readlines()
-    self.script_settings = conf.check_script(script_config)
-    if not self.script_settings:
+    #init task config
+    with open(task_file) as fp:
+        task_config = fp.readlines()
+    self.task_settings = conf.check_task(task_config)
+    if not self.task_settings:
         print conf.get_error()
         exit(0)
-    #init thread check script config
-    if self.settings.get('script_refresh'):
-        config_thread = Rthread(thread, 'config_refresh', self)
+    #init local config
+    with open(local_file) as fp:
+        local_config = fp.readlines()
+    self.local_settings = conf.check_local(local_config)
+    if not self.local_settings:
+        print conf.get_error()
+        exit(0)
+    #init thread check task config
+    if self.settings.get('config_refresh'):
+        config_thread = Rthread(__thread, 'config_refresh', self)
         config_thread.start()
+
