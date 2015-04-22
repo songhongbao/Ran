@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 import re
+import os
 
 class Conf():
     __config = dict()
     __error_msg = ''
     __task_propertys = ['progress', 'thread']
+    __task_list = []
     
+    #deal ran config
+    #ran config only support strict pattern: key=value
     def __deal(self, line, num):
         line = line.strip()
         if len(line) == 0 or line[0] == '#':
@@ -18,15 +22,23 @@ class Conf():
         self.__config[key] = (value, num)
         return True
     
+    #deal task config
+    #task config only support strict pattern: taskname.property=numbers
     def __task_deal(self, config, key, value):
         if len(key.split('.')) != 2:
             return False
         task_name, task_property = key.split('.')
+        #property need be in __task_propertys
         if not task_property in self.__task_propertys:
             return False
+        #property need be numbers
         if not re.match(r'^[1-9]\d*$', value):
             return False
         value = int(value)
+        #task need be in task folder
+        if not task_name in self.__task_list:
+            return False
+        #all is ok, register to the config
         if not config.get(task_name):
             config[task_name] = dict()
             config[task_name]['progress'] = 1
@@ -34,6 +46,8 @@ class Conf():
         config[task_name][task_property] = value
         return config
     
+    #deal local config
+    #local config can support normal pattern: key1.key2.key3...keyn=valuel
     def __local_deal(self, config, key, value):
         if len(key) == 1:
             config[key[0]] = value
@@ -43,15 +57,26 @@ class Conf():
             config[key[0]] = self.__local_deal(config[key[0]], key[1:], value)
         return config
     
+    #init the task file name list
+    def __init_task_folder(self):
+        self.__task_list = []
+        for task_name in os.listdir('task'):
+            if task_name[-3 : ] == '.py':
+                self.__task_list.append(task_name[0 : -3])
+    
+    #config check false, set the errors
     def __set_error(self, value, line=0, name='ran'):
         if line:
             self.__error_msg = name + '.config line ' + str(line) + ' error: ' + str(value)
         else:
             self.__error_msg = 'check ' + name + '.config error:\n' + str(value)
     
+    #if config check false, you can get errors by the function
+    #the error info can be write in the ran log
     def get_error(self):
         return self.__error_msg
 
+    #ran config check is complex
     def check_ran(self, lines):
         self.__config = dict()
         num = 1
@@ -104,6 +129,7 @@ class Conf():
                 self.__set_error(line, num, 'task')
                 return False
             num += 1
+        self.__init_task_folder()
         config = dict()
         for key, value in self.__config.iteritems():
             if not self.__task_deal(config, key, value[0]):
