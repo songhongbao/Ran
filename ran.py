@@ -1,26 +1,28 @@
 # -*- coding: utf-8 -*-
-import config
 from base.checkparam import Param
-#from base.socket_worker import SocketWorker
-from server.rsocket.geventSocket import GeventSockect
-from base.progress_handle import socket_deal
+from handler.root import Root
+from handler.user import User
 
-def ran_user():
-    pass
+class Ran():
+    __setting = ''
+    
+    def __init__(self, setting):
+        self.__setting = setting
+        
+    def run(self):
+        if self.__setting.node == 'root':
+            node = Root()
+        else:
+            node = User()
+        node.set_param(self.__setting.option, self.__setting.task, self.__setting.flag)
+        result = node.run()
+        if result == False:
+            print node.result()
+        else:
+            print result
 
-def ran_root():
-    #to do
-    #check root exist
-    worker = GeventSockect(config.config('socket_port'))
-    worker.run(socket_deal)
-
-def ran_child():
-    pass
-
-
-
-def run():
+def main():
     param = Param()
     setting = param.check()
-    if setting.node == 'root':
-        ran_root()
+    ran = Ran(setting)
+    ran.run()

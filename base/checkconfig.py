@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import re
 import os
+import sys
 
 class Conf():
     __config = dict()
@@ -57,6 +58,19 @@ class Conf():
             config[key[0]] = self.__local_deal(config[key[0]], key[1:], value)
         return config
     
+    #deal error config
+    #error config value include error const, and error info
+    def __error_deal(self, config, key, value):
+        if len(value.split(':')) != 2:
+            return False
+        error_key, error_value = value.split(':')
+        error_key = error_key.strip()
+        error_value = error_value.strip()
+        config[error_key] = dict()
+        config[error_key]['num'] = key
+        config[error_key]['msg'] = error_value
+        return config
+    
     #init the task file name list
     def __init_task_folder(self):
         self.__task_list = []
@@ -86,6 +100,8 @@ class Conf():
                 return False
             num += 1
         config = dict()
+        #set progress dir
+        config['dir'] = sys.path[0]
         #task refresh
         value, num = self.__config.get('config_refresh', ('no', 0))
         if value != 'yes' and value != 'no':
@@ -100,7 +116,13 @@ class Conf():
         config['config_refresh_time'] = int(value)
         #socket_folder
         value, num = self.__config.get('socket_folder', ('tmp', 0))
-        config['socket_folder'] = value
+        if value.find('/') == 0:
+            config['socket_folder'] = value
+        else:
+            config['socket_folder'] = config['dir'] + '/' + value
+        if not os.path.exists(config['socket_folder']):
+            self.__set_error(value + ' folder not exist', num)
+            return False
         #socket_port
         value, num = self.__config.get('socket_port', ('7664', 0))
         if not re.match(r'^[1-9]\d*$', value):
@@ -109,6 +131,7 @@ class Conf():
         config['socket_port'] = int(value)
         #log_file_folder
         value, num = self.__config.get('log_file_folder', ('log', 0))
+        #if not os.path.exists(file_folder):
         config['log_file_folder'] = value
         #log_udp_host
         value, num = self.__config.get('log_udp_host', ('127.0.0.1', 0))
@@ -148,4 +171,17 @@ class Conf():
         config = dict()
         for key, value in self.__config.iteritems():
             self.__local_deal(config, key.split('.'), value[0])
+        return config
+    
+    def check_error(self, lines):
+        self.__config = dict()
+        num = 1
+        for line in lines:
+            if not self.__deal(line, num):
+                self.__set_error(line, num, 'local')
+                return False
+            num += 1
+        config = dict()
+        for key, value in self.__config.iteritems():
+            self.__error_deal(config, key, value[0])
         return config
