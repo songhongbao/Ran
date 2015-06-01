@@ -37,7 +37,7 @@ def success(data = ''):
     info['num'] = '0'
     return json.dumps(info)
 
-def __thread(self):
+def _thread(self):
     conf = Conf()
     while True:
         #task config
@@ -90,7 +90,7 @@ def init(self):
         exit(0)
     #init thread check task config
     if self.settings.get('config_refresh'):
-        config_thread = Rthread(__thread, 'config_refresh', self)
+        config_thread = Rthread(_thread, 'config_refresh', self)
         config_thread.start()
 
 #super param

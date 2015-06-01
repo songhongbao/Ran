@@ -4,12 +4,12 @@ import threading
 THREAD_FLAG = '*Rthread*'
 
 class Rthread(threading.Thread):
-    __func = ''
-    __args = ''
+    _func = ''
+    _args = ''
     
     def __init__(self, func, name, *args):
-        self.__func = func
-        self.__args = args
+        self._func = func
+        self._args = args
         threading.Thread.__init__(self, group=None, target=None, name=THREAD_FLAG + name)
         return
 
@@ -23,11 +23,11 @@ class Rthread(threading.Thread):
 
     @property
     def result(self):
-        return self.__result
+        return self._result
 
     def run(self):
-        if len(self.__args) > 0:
-            self.__func(*self.__args)
+        if len(self._args) > 0:
+            self._func(*self._args)
         else:
-            self.__func()
+            self._func()
         return True

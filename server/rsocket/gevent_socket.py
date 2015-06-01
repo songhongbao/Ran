@@ -2,20 +2,20 @@
 from gevent.server import StreamServer
 
 class GeventSockect():
-    __host = ''
-    __port = ''
-    __func = ''
+    _host = ''
+    _port = ''
+    _func = ''
     
     def __init__(self, port):
-        self.__host = '0.0.0.0'
-        self.__port = port
+        self._host = '0.0.0.0'
+        self._port = port
         
     def deal(self, sock, address):
         fp = sock.makefile()
         while True:
             line = fp.readline().strip()
             if line:
-                out = self.__func(line)
+                out = self._func(line)
                 fp.write(out)
                 fp.flush()
             else:
@@ -24,6 +24,6 @@ class GeventSockect():
         
     
     def run(self, func):
-        self.__func = func
-        server = StreamServer((self.__host, self.__port), self.deal)
+        self._func = func
+        server = StreamServer((self._host, self._port), self.deal)
         server.serve_forever()

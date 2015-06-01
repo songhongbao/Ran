@@ -13,10 +13,10 @@ all root node use tcp connect other server
 all node in the same server, connect by file socket
 '''
 class Ran():
-    __setting = ''
+    _setting = ''
     
     def __init__(self, setting):
-        self.__setting = setting
+        self._setting = setting
         
     def status(self):
         #todo
@@ -25,7 +25,7 @@ class Ran():
     
     def start(self):
         root_alive = root.alive()
-        if self.__setting.node == 'root':
+        if self._setting.node == 'root':
             if root_alive:
                 print config.error('ROOT_RUNNING')
                 return
@@ -38,13 +38,13 @@ class Ran():
         return
         
     def run(self):
-        if self.__setting.option == 'status':
+        if self._setting.option == 'status':
             self.status()
-        if self.__setting.option == 'start':
+        if self._setting.option == 'start':
             self.start()
-        if self.__setting.option == 'stop':
+        if self._setting.option == 'stop':
             self.stop()
-        if self.__setting.option == 'restart':
+        if self._setting.option == 'restart':
             self.stop()
             self.start()
 

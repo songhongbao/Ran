@@ -4,17 +4,17 @@ from handler.root import Root
 from handler.user import User
 
 class Ran():
-    __setting = ''
+    _setting = ''
     
     def __init__(self, setting):
-        self.__setting = setting
+        self._setting = setting
         
     def run(self):
-        if self.__setting.node == 'root':
+        if self._setting.node == 'root':
             node = Root()
         else:
             node = User()
-        node.set_param(self.__setting.option, self.__setting.task, self.__setting.flag)
+        node.set_param(self._setting.option, self._setting.task, self._setting.flag)
         result = node.run()
         if result == False:
             print node.result()
