@@ -24,8 +24,8 @@ class FileSocket():
         if os.path.exists(self._file_path):
             os.unlink(self._file_path)
         self._server_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        #self._server_socket.setblocking(0)
-        #SO_REUSEADDR fix socket.error: Address already in use
+        # self._server_socket.setblocking(0)
+        # SO_REUSEADDR fix socket.error: Address already in use
         self._server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self._server_socket.bind(self._file_path)
         self._server_socket.listen(5)
